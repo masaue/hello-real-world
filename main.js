@@ -1,37 +1,45 @@
-// タクトスイッチでLEDの点灯を行うチュートリアル
 const { requestGPIOAccess } = require("node-web-gpio");
+const { requestI2CAccess } = require("node-web-i2c");
+const MPU6050 = require("@chirimen/mpu6050");
+const { promisify } = require("util");
+const sleep = promisify(setTimeout);
 
-async function button() {
-    const gpioAccess = await requestGPIOAccess();
+main();
 
-    // LEDの接続されているポートの指定
-    const ledPort = gpioAccess.ports.get(26);
-    await ledPort.export("out");
+async function main() {
+  const gpioAccess = await requestGPIOAccess();
 
-    // タクトスイッチの接続されているポートの指定
-    const switchPort = gpioAccess.ports.get(5);
-    await switchPort.export("in");
+  // LEDの接続されているポートの指定
+  const ledPort = gpioAccess.ports.get(26);
+  await ledPort.export("out");
 
-    // 点灯回数をカウントする引数cnt
-    var cnt = 0;
+  // タクトスイッチの接続されているポートの指定
+  const switchPort = gpioAccess.ports.get(5);
+  await switchPort.export("in");
 
-    switchPort.onchange = function(val) {
-        // ボタンを押すと点灯、離すと消灯する
-        if (cnt > 9 && val.value == 0){
-            console.log("Light : OFF");
-            process.exit(1);
-        }
+  var i2cAccess = await requestI2CAccess();
+  var port = i2cAccess.ports.get(1);
+  var mpu6050 = new MPU6050(port, 0x68);
+  await mpu6050.init();
+  while (true) {
+    const data = await mpu6050.readAll();
+    const temperature = data.temperature.toFixed(2);
+    const g = [data.gx, data.gy, data.gz];
+    const r = [data.rx, data.ry, data.rz];
+    console.log(
+      [
+        `Temperature: ${temperature} degree`,
+        `Gx: ${g[0]}, Gy: ${g[1]}, Gz: ${g[2]}`,
+        `Rx: ${r[0]}, Ry: ${r[1]}, Rz: ${r[2]}`
+      ].join("\n")
+    );
+    if (await switchPort.read() === 0) {
+      console.log("pulled");
+    }
+    else {
+      console.log("not pulled");
+    }
 
-        if(val.value == 1){
-            ledPort.write(0);
-            console.log("Light : OFF");
-            cnt = cnt + 1;
-        } else if(val.value == 0){
-            ledPort.write(1);
-            console.log("Light : ON");
-            cnt = cnt + 1;
-        }
-    };
+    await sleep(500);
+  }
 }
-
-button();

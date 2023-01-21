@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@chirimen/mpu6050": "^1.0.3",
     "node-web-gpio": "^1.0.17",
     "node-web-i2c": "^1.1.23"
   }
