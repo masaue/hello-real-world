@@ -2,16 +2,28 @@
   "name": "hello-real-world",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
+    "start": "babel-node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/core": "^7.20.12",
+    "@babel/node": "^7.20.7",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/register": "^7.18.9",
     "@chirimen/mpu6050": "^1.0.3",
+    "node-fetch": "^3.3.0",
     "node-web-gpio": "^1.0.17",
     "node-web-i2c": "^1.1.23"
-  }
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
+  },
+  "type": "module"
 }

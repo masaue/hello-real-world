@@ -1,7 +1,8 @@
-const { requestGPIOAccess } = require("node-web-gpio");
-const { requestI2CAccess } = require("node-web-i2c");
-const MPU6050 = require("@chirimen/mpu6050");
-const { promisify } = require("util");
+import fetch from "node-fetch";
+import { requestGPIOAccess } from "node-web-gpio";
+import { requestI2CAccess } from "node-web-i2c";
+import MPU6050 from "@chirimen/mpu6050";
+import { promisify } from "util";
 const sleep = promisify(setTimeout);
 
 main();
@@ -35,11 +36,34 @@ async function main() {
     );
     if (await switchPort.read() === 0) {
       console.log("pulled");
+
+      let data = {
+        "action": "insert",
+        "sheetName": "sheet1",
+        "rows": [
+          {
+            "value1": 334,
+            "value2": 334,
+            "value3": 334
+          }
+        ]
+      };
+    
+      fetch('https://script.google.com/macros/s/AKfycbzFdMMVldXmUfBYcWIzF-dWs5LWtv9g_MJjrW-DbMegM6b4UjUsasGbwTPUOZtGNV3J/exec', {
+        method: 'POST',
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.text())
+      .then(data => { console.log(data) });
     }
     else {
       console.log("not pulled");
     }
 
-    await sleep(500);
+    await sleep(3000);
   }
 }
