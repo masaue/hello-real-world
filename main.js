@@ -36,6 +36,7 @@ async function main() {
     );
     if (await switchPort.read() === 0) {
       console.log("pulled");
+      ledPort.write(1)
 
       let data = {
         "action": "insert",
@@ -62,6 +63,7 @@ async function main() {
     }
     else {
       console.log("not pulled");
+      ledPort.write(0)
     }
 
     await sleep(3000);
