@@ -66,6 +66,6 @@ async function main() {
       ledPort.write(0)
     }
 
-    await sleep(3000);
+    await sleep(1000);
   }
 }
