@@ -43,9 +43,9 @@ async function main() {
         "sheetName": "sheet1",
         "rows": [
           {
-            "value1": 334,
-            "value2": 334,
-            "value3": 334
+            "value1": r[0],
+            "value2": r[1],
+            "value3": r[2] 
           }
         ]
       };
